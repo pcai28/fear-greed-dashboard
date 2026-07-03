@@ -1,0 +1,115 @@
+.share-instructions {
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.share-instructions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.share-instructions-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.share-instructions-close {
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.share-instructions-close:hover { background: var(--panel-2); color: var(--ink); }
+.share-instructions-close svg { width: 16px; height: 16px; pointer-events: none; }
+
+.share-steps {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: share-step;
+}
+
+.share-steps li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 28px;
+  counter-increment: share-step;
+}
+
+.share-steps li::before {
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--muted);
+  content: counter(share-step);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.share-step-action {
+  display: inline-flex;
+  min-height: 36px;
+  width: fit-content;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--motion-control), color var(--motion-control);
+}
+
+.share-step-action svg { width: 16px; height: 16px; flex: none; pointer-events: none; }
+.share-step-action:hover { background: var(--button-active); }
+.share-step-action:disabled { color: var(--muted); cursor: wait; }
+
+.share-step-note {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.share-instructions-close:focus-visible,
+.share-step-action:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .share-step-action { transition-duration: 0.01ms; }
+}
+
+@media (forced-colors: active) {
+  .share-instructions-close,
+  .share-step-action { forced-color-adjust: auto; }
+}

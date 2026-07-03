@@ -1,0 +1,57 @@
+:root {
+  color-scheme: light;
+  --font-gauge-semantic: "Archivo Narrow Variable", "Arial Narrow", sans-serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --bg: #f7f8f4;
+  --ink: #182026;
+  --muted: #626d75;
+  --line: #d9dfdc;
+  --panel: #ffffff;
+  --panel-2: #f4f6f3;
+  --chart-bg: #fbfcfa;
+  --tooltip-bg: rgba(255, 255, 255, 0.96);
+  --overlay-bg: rgba(251, 252, 250, 0.78);
+  --vix: #255f85;
+  --on-vix: #ffffff;
+  --fear: #c05235;
+  --error-text: #a6402a;
+  --fear-soft: #fff0e9;
+  --vix-soft: #e9f4f7;
+  --shadow-selected: 0 1px 4px rgba(24, 32, 38, 0.08);
+  --shadow-floating: 0 6px 18px rgba(24, 32, 38, 0.14);
+  --motion-control: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  --focus: #255f85;
+  --button-bg: #f2f4f0;
+  --button-active: #ffffff;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #15191d;
+  --ink: #eef2f1;
+  --muted: #a8b3b8;
+  --line: #344047;
+  --panel: #1d2328;
+  --panel-2: #252d33;
+  --chart-bg: #181e22;
+  --tooltip-bg: rgba(29, 35, 40, 0.96);
+  --overlay-bg: rgba(24, 30, 34, 0.78);
+  --vix: #7cb7d8;
+  --on-vix: #182026;
+  --fear: #ee9273;
+  --error-text: #ee9273;
+  --fear-soft: rgba(192, 82, 53, 0.18);
+  --vix-soft: rgba(37, 95, 133, 0.28);
+  --shadow-selected: 0 1px 4px rgba(0, 0, 0, 0.22);
+  --shadow-floating: 0 6px 18px rgba(0, 0, 0, 0.28);
+  --focus: #7cb7d8;
+  --button-bg: #242b31;
+  --button-active: #313a42;
+}

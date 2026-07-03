@@ -1,0 +1,16 @@
+.privacy-shell {
+  width: min(760px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: var(--space-8) 0 var(--space-12);
+}
+
+.privacy-back,
+.privacy-shell a { color: var(--ink); text-underline-offset: 0.18em; }
+.privacy-back { display: inline-block; margin-bottom: var(--space-8); }
+.privacy-shell article { padding: clamp(1.25rem, 4vw, 3rem); border: 1px solid var(--line); background: var(--panel); }
+.privacy-shell h1 { margin: var(--space-2) 0; font-size: clamp(2rem, 6vw, 3.5rem); line-height: 1; }
+.privacy-shell h2 { margin: var(--space-8) 0 var(--space-2); font-size: 1.2rem; }
+.privacy-shell p,
+.privacy-shell li { color: var(--muted); line-height: 1.7; }
+.privacy-shell ul { padding-left: 1.25rem; }
+.privacy-effective { font-size: 0.9rem; }

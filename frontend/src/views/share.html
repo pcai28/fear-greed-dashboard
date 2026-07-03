@@ -1,0 +1,85 @@
+<dialog class="share-dialog" id="shareDialog" aria-labelledby="shareDialogTitle">
+  <div class="share-dialog-panel">
+    <header class="share-dialog-header">
+      <h2 id="shareDialogTitle">Share market sentiment snapshot</h2>
+      <button class="share-close" id="shareDialogClose" type="button" aria-label="Close share dialog">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18"></path>
+        </svg>
+      </button>
+    </header>
+
+    <div class="share-preview" id="sharePreview" aria-busy="true">
+      <img id="sharePreviewImage" src="/favicon.svg" alt="" hidden />
+      <p id="sharePreviewPlaceholder">Rendering current market data…</p>
+    </div>
+
+    <p class="sr-only" id="shareStatus" role="status" aria-live="polite">Preparing PNG…</p>
+
+    <div class="share-options" id="shareOptions" hidden>
+      <button class="share-option" type="button" data-share-platform="x" aria-label="Share to X" title="Share to X" aria-expanded="false" aria-controls="shareInstructions">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M18.9 2H22l-6.77 7.74L23.2 22h-6.24l-4.89-6.39L6.48 22H3.36l7.26-8.3L2.98 2h6.4l4.42 5.84L18.9 2Zm-1.1 17.84h1.73L8.44 4.05H6.58L17.8 19.84Z"></path>
+        </svg>
+      </button>
+      <button class="share-option" type="button" data-share-platform="threads" aria-label="Share to Threads" title="Share to Threads" aria-expanded="false" aria-controls="shareInstructions">
+        <svg viewBox="0 0 976.98 1082" fill="currentColor" aria-hidden="true" data-brand-icon="threads">
+          <path d="M770.35 500.35c-1.35-156.85-86.39-251.37-230.02-251.37-95.87 0-176.5 43.36-218.85 112.47l92.82 64.71c24.05-37.94 57.25-69.45 118.23-69.45 68.77 0 104.34 38.28 114.5 109.42-33.2-5.08-66.4-7.79-100.61-7.79-185.65 0-273.05 84.02-273.05 195.13s87.4 179.55 216.14 179.55c141.27 0 225.62-95.19 260.18-213.09 35.91 16.26 60.64 54.2 60.64 111.12 0 152.45-175.82 235.45-324.88 235.45-219.86 0-363.5-144.32-363.5-379.08 0-287.62 190.05-471.91 445.48-471.91 171.42 0 256.11 75.21 313.7 176.16l94.86-66.4C913.31 94.5 773.4 1 563.36 1 228.65 1 1 238.48 1 583.01 1 898.07 223.91 1081 489.51 1081c219.52 0 441.42-128.05 441.42-347.24 0-114.5-65.72-190.39-160.58-233.41ZM485.44 718.85c-48.44 0-91.13-23.04-91.13-65.38 0-66.74 81.98-87.06 162.27-87.06 30.49 0 60.3 2.03 86.72 7.79-18.97 86.72-75.21 144.66-157.87 144.66Z"></path>
+        </svg>
+      </button>
+      <button class="share-option" type="button" data-share-platform="facebook" aria-label="Share to Facebook" title="Share to Facebook" aria-expanded="false" aria-controls="shareInstructions">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M13.65 22v-9.12h3.06l.46-3.56h-3.52V7.05c0-1.03.29-1.73 1.76-1.73h1.88V2.14c-.33-.04-1.44-.14-2.73-.14-2.7 0-4.55 1.65-4.55 4.67v2.65H6.96v3.56h3.05V22h3.64Z"></path>
+        </svg>
+      </button>
+      <button class="share-option" type="button" data-share-platform="reddit" aria-label="Share to Reddit" title="Share to Reddit" aria-expanded="false" aria-controls="shareInstructions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12.5" r="7.25"></circle>
+          <circle cx="9" cy="11.5" r="1"></circle>
+          <circle cx="15" cy="11.5" r="1"></circle>
+          <path d="M8.6 15c1.8 1.25 5 1.25 6.8 0M12.8 5.3l1-3.3 3.25.75"></path>
+          <circle cx="18" cy="4" r="1.5"></circle>
+          <path d="M5.15 9.3A2.2 2.2 0 1 0 4 13.25M18.85 9.3A2.2 2.2 0 1 1 20 13.25"></path>
+        </svg>
+      </button>
+      <a class="share-option" id="shareDownload" download aria-label="Save PNG" title="Save PNG">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"></path>
+        </svg>
+      </a>
+    </div>
+
+    <section class="share-instructions" id="shareInstructions" aria-labelledby="shareInstructionsTitle" hidden>
+      <header class="share-instructions-header">
+        <h3 id="shareInstructionsTitle">Share to X</h3>
+        <button class="share-instructions-close" id="shareInstructionsClose" type="button" aria-label="Close sharing instructions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </header>
+      <ol class="share-steps">
+        <li>
+          <button class="share-step-action" id="shareCopyImage" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="8" y="8" width="11" height="11" rx="2"></rect>
+              <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path>
+            </svg>
+            <span id="shareCopyImageLabel">Copy image</span>
+          </button>
+        </li>
+        <li>
+          <a class="share-step-action" id="shareOpenComposer" href="#" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M3 12h18M12 3c2.25 2.45 3.4 5.45 3.4 9S14.25 18.55 12 21M12 3C9.75 5.45 8.6 8.45 8.6 12S9.75 18.55 12 21"></path>
+            </svg>
+            <span id="shareOpenComposerLabel">Open X composer</span>
+          </a>
+        </li>
+        <li><span class="share-step-note">Paste image into the post</span></li>
+      </ol>
+    </section>
+    <button class="share-retry" id="shareRetry" type="button" hidden>Try again</button>
+  </div>
+</dialog>

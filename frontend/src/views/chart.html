@@ -1,0 +1,60 @@
+<section class="chart-panel">
+  <div class="chart-toolbar">
+    <div class="legend" aria-label="Chart legend">
+      <span>
+        <i class="fear-line" aria-hidden="true"></i>
+        <span class="legend-series">Fear &amp; Greed Index</span>
+        <span class="legend-axis">· Left axis</span>
+      </span>
+      <span>
+        <i class="vix-line" aria-hidden="true"></i>
+        <span class="legend-series">VIX</span>
+        <span class="legend-axis">· Right axis</span>
+      </span>
+    </div>
+    <div class="chart-toolbar-controls">
+      <div class="range-tabs" id="rangeTabs" aria-label="Time range">
+        <button type="button" data-range="1D" aria-pressed="false">1D</button>
+        <button type="button" data-range="5D" aria-pressed="false">5D</button>
+        <button type="button" data-range="1M" aria-pressed="false">1M</button>
+        <button type="button" data-range="6M" aria-pressed="false">6M</button>
+        <button type="button" data-range="YTD" aria-pressed="false">YTD</button>
+        <button type="button" data-range="1Y" class="active" aria-pressed="true">1Y</button>
+        <button type="button" data-range="5Y" aria-pressed="false">5Y</button>
+      </div>
+    </div>
+  </div>
+  <div class="chart-wrap">
+    <canvas id="emotionChart" width="1200" height="560" tabindex="0" role="img"
+      aria-describedby="chartSummary chartInstructions"
+      aria-label="Fear & Greed and VIX dual-axis chart"></canvas>
+    <div class="tooltip" id="tooltip" hidden></div>
+    <div class="chart-message" id="chartMessage">
+      <span id="chartMessageText" role="status" aria-live="polite">Loading chart...</span>
+      <button class="chart-retry" id="chartRetry" type="button" hidden>Try again</button>
+    </div>
+  </div>
+  <p class="sr-only" id="chartSummary">
+    The chart compares CNN Fear &amp; Greed Index on the left axis and VIX on the right axis for the selected time range.
+  </p>
+  <p class="sr-only" id="chartInstructions">
+    Focus the chart and use the left and right arrow keys to inspect historical points. Use Home for the first point and End for the latest point.
+  </p>
+  <div class="sr-only" id="chartAnnouncement" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div class="data-alert" id="dataAlert" hidden>
+    <span id="dataAlertText" role="status" aria-live="polite"></span>
+    <button class="data-retry" id="dataRetry" type="button" hidden>Try again</button>
+  </div>
+  <div class="thresholds">
+    <span>Fear &amp; Greed: 0-25 Extreme Fear, 26-45 Fear, 46-55 Neutral, 56-75 Greed, 76-100 Extreme Greed</span>
+    <span>VIX: &lt;15 Calm &amp; Stable, 15-30 Moderate Uncertainty &amp; Caution, 30+ Significant Fear &amp; Uncertainty</span>
+  </div>
+</section>
+<div class="share-toolbar">
+  <button class="share-trigger" id="shareLineChart" type="button" data-share-kind="line-chart" aria-haspopup="dialog">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+      <path d="M12 16V4m0 0 4 4m-4-4L8 8M5 13v6h14v-6"></path>
+    </svg>
+    Share
+  </button>
+</div>

@@ -1,0 +1,71 @@
+<section class="gauge-section" aria-label="Latest market emotion readings">
+  <div class="metrics" id="gaugeShareTarget">
+  <article class="metric-card fear-card gauge-card" id="fearCard">
+    <div class="metric-head"><span>CNN Fear &amp; Greed</span></div>
+    <div class="gauge gauge-fear" id="fearGauge" role="img" aria-label="CNN Fear and Greed gauge">
+      <svg class="gauge-arc" viewBox="0 0 520 270" aria-hidden="true">
+        <defs><path id="fearLabelArc" d="M 26 236 A 234 234 0 0 1 494 236"></path></defs>
+        <path class="gauge-segment seg-a" pathLength="100" d="M 42 236 A 218 218 0 0 1 478 236"></path>
+        <path class="gauge-segment seg-b" pathLength="100" d="M 42 236 A 218 218 0 0 1 478 236"></path>
+        <path class="gauge-segment seg-c" pathLength="100" d="M 42 236 A 218 218 0 0 1 478 236"></path>
+        <path class="gauge-segment seg-d" pathLength="100" d="M 42 236 A 218 218 0 0 1 478 236"></path>
+        <path class="gauge-segment seg-e" pathLength="100" d="M 42 236 A 218 218 0 0 1 478 236"></path>
+        <text class="gauge-svg-label" data-range="extreme-fear"><textPath href="#fearLabelArc" startOffset="12%">EXTREME FEAR</textPath></text>
+        <text class="gauge-svg-label" data-range="fear"><textPath href="#fearLabelArc" startOffset="34.5%">FEAR</textPath></text>
+        <text class="gauge-svg-label" data-range="neutral"><textPath href="#fearLabelArc" startOffset="49.5%">NEUTRAL</textPath></text>
+        <text class="gauge-svg-label" data-range="greed"><textPath href="#fearLabelArc" startOffset="64.5%">GREED</textPath></text>
+        <text class="gauge-svg-label" data-range="extreme-greed"><textPath href="#fearLabelArc" startOffset="87%">EXTREME GREED</textPath></text>
+        <g class="gauge-svg-ticks">
+          <text x="124" y="236">0</text>
+          <text x="163.83" y="139.83">25</text>
+          <text x="260" y="100">50</text>
+          <text x="356.17" y="139.83">75</text>
+          <text x="396" y="236">100</text>
+        </g>
+      </svg>
+      <div class="gauge-needle" id="fearNeedle" aria-hidden="true"></div>
+      <div class="gauge-hub" aria-hidden="true"><span class="metric-value" id="fearValue">--</span></div>
+    </div>
+    <div class="metric-status" id="fearStatus">Loading</div>
+    <div class="metric-time" id="fearTime">--</div>
+  </article>
+
+  <article class="metric-card vix-card gauge-card" id="vixCard">
+    <div class="metric-head"><span>VIX</span></div>
+    <div class="gauge gauge-vix" id="vixGauge" role="img" aria-label="VIX gauge">
+      <svg class="gauge-arc" viewBox="0 0 520 270" aria-hidden="true">
+        <defs>
+          <path id="vixLabelArc" d="M 26 236 A 234 234 0 0 1 494 236"></path>
+          <path id="vixLabelArcInner" d="M 50 236 A 210 210 0 0 1 470 236"></path>
+        </defs>
+        <path class="gauge-segment seg-a" pathLength="100" d="M 42 236 A 218 218 0 0 1 478 236"></path>
+        <path class="gauge-segment seg-b" pathLength="100" d="M 42 236 A 218 218 0 0 1 478 236"></path>
+        <path class="gauge-segment seg-c" pathLength="100" d="M 42 236 A 218 218 0 0 1 478 236"></path>
+        <text class="gauge-svg-label" data-range="calm"><textPath href="#vixLabelArc" startOffset="16%">CALM &amp; STABLE</textPath></text>
+        <text class="gauge-svg-label" data-range="moderate"><textPath href="#vixLabelArc" startOffset="50%">MODERATE UNCERTAINTY</textPath></text>
+        <text class="gauge-svg-label" data-range="moderate"><textPath href="#vixLabelArcInner" startOffset="50%">&amp; CAUTION</textPath></text>
+        <text class="gauge-svg-label" data-range="significant"><textPath href="#vixLabelArc" startOffset="84%">SIGNIFICANT FEAR</textPath></text>
+        <text class="gauge-svg-label" data-range="significant"><textPath href="#vixLabelArcInner" startOffset="84%">&amp; UNCERTAINTY</textPath></text>
+        <g class="gauge-svg-ticks">
+          <text x="124" y="236">0</text>
+          <text x="192" y="118.22">15</text>
+          <text x="328" y="118.22">30</text>
+          <text x="396" y="236">45</text>
+        </g>
+      </svg>
+      <div class="gauge-needle" id="vixNeedle" aria-hidden="true"></div>
+      <div class="gauge-hub" aria-hidden="true"><span class="metric-value" id="vixValue">--</span></div>
+    </div>
+    <div class="metric-status" id="vixStatus">Loading</div>
+    <div class="metric-time" id="vixTime">--</div>
+  </article>
+  </div>
+  <div class="share-toolbar">
+    <button class="share-trigger" id="shareGauges" type="button" data-share-kind="gauges" aria-haspopup="dialog">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+        <path d="M12 16V4m0 0 4 4m-4-4L8 8M5 13v6h14v-6"></path>
+      </svg>
+      Share
+    </button>
+  </div>
+</section>

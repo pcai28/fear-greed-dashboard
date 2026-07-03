@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="88" fill="#f4f4f4"/>
+  <g font-family="Arial Black, Arial, sans-serif" font-size="168" font-weight="900" text-anchor="middle">
+    <text x="124" y="310" fill="#F06D1F">F</text>
+    <text x="256" y="310" fill="#182026">G</text>
+    <text x="388" y="310" fill="#255F85">V</text>
+  </g>
+</svg>

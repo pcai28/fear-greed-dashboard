@@ -1,0 +1,66 @@
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.metric-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: none;
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  min-height: 360px;
+  overflow: hidden;
+}
+
+.fear-card {
+  background: linear-gradient(135deg, var(--panel), var(--fear-soft));
+}
+
+.vix-card {
+  background: linear-gradient(135deg, var(--panel), var(--vix-soft));
+}
+
+.metric-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 650;
+  position: relative;
+  z-index: 2;
+}
+
+.metric-value {
+  font-size: clamp(2.35rem, 5vw, 4rem);
+  font-weight: 740;
+  line-height: 0.9;
+  max-width: 100%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.metric-status {
+  margin-top: var(--space-1);
+  font-family: var(--font-gauge-semantic);
+  font-size: clamp(1rem, 2.1vw, 1.45rem);
+  font-weight: 650;
+  letter-spacing: 0.005em;
+  text-align: center;
+}
+
+.metric-time {
+  margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.gauge-card {
+  display: flex;
+  flex-direction: column;
+}

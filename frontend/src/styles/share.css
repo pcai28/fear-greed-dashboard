@@ -1,0 +1,113 @@
+.share-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.chart-toolbar-controls {
+  display: block;
+}
+
+.gauge-section > .metrics { margin-bottom: 0; }
+
+.share-trigger {
+  position: relative;
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-control),
+    border-color var(--motion-control),
+    color var(--motion-control),
+    transform var(--motion-control);
+}
+
+.share-trigger::before {
+  position: absolute;
+  content: "";
+  inset: -4px;
+}
+
+.share-trigger svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  pointer-events: none;
+}
+
+.share-trigger:hover {
+  background: var(--panel-2);
+}
+
+.share-trigger:active { transform: translateY(1px); }
+
+.share-trigger:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.share-trigger:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.metrics.share-export {
+  width: 1180px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-6);
+  background: var(--bg);
+}
+
+.metrics.share-export .metric-card {
+  min-height: 360px;
+  padding: var(--space-6) var(--space-6) var(--space-4);
+}
+
+.metrics.share-export .metric-value { font-size: 4rem; }
+.metrics.share-export .metric-status { font-size: 1.45rem; }
+.metrics.share-export .gauge { margin-top: 8px; }
+.metrics.share-export .gauge-svg-label { font-size: 15px; }
+.metrics.share-export .gauge-svg-ticks { font-size: 14px; }
+.metrics.share-export .gauge-hub { width: 168px; height: 140px; }
+
+.chart-panel.share-export {
+  width: 1180px;
+  padding: var(--space-4);
+  background: var(--panel);
+}
+
+.chart-panel.share-export .chart-toolbar {
+  align-items: center;
+  flex-direction: row;
+}
+
+.chart-panel.share-export .chart-toolbar-controls {
+  align-items: center;
+  flex-direction: row;
+}
+
+.chart-panel.share-export .range-tabs { grid-template-columns: repeat(7, minmax(42px, 1fr)); }
+.chart-panel.share-export .chart-wrap { height: 560px; min-height: 560px; }
+.chart-panel.share-export .thresholds { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .share-trigger { transition-duration: 0.01ms; }
+}
+
+@media (forced-colors: active) {
+  .share-trigger { forced-color-adjust: auto; }
+}

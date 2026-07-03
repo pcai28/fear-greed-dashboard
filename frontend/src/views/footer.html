@@ -1,0 +1,74 @@
+<figure class="quote-strip">
+  <blockquote>"Be Fearful when others are Greedy, and Greedy when others are Fearful."</blockquote>
+  <figcaption>— Warren Buffett</figcaption>
+</figure>
+
+<footer class="site-footer" aria-label="Dashboard notes">
+  <section class="footer-block waitlist-block">
+    <h2>Know when market sentiment reaches an extreme—without watching all day.</h2>
+    <p class="waitlist-description">
+      Interested in Market Sentiment SMS Alerts for Extreme Fear &amp; Extreme Greed?
+      Leave your email and I’ll send one note when the feature launches.
+    </p>
+    <form class="waitlist-form" id="waitlistForm" novalidate>
+      <div class="waitlist-fields">
+        <label class="sr-only" for="waitlistEmail">Email address</label>
+        <input id="waitlistEmail" name="email" type="email" autocomplete="email"
+          inputmode="email" placeholder="Email address" maxlength="254" required disabled
+          aria-describedby="waitlistNote waitlistMessage" aria-invalid="false" />
+        <button type="submit" disabled>Email me at launch</button>
+      </div>
+      <label class="waitlist-consent" for="waitlistConsent">
+        <input id="waitlistConsent" name="consent" type="checkbox" required disabled
+          aria-describedby="waitlistNote" aria-invalid="false" />
+        <span>I agree to receive one launch notification and can withdraw consent at any time.</span>
+      </label>
+    </form>
+    <p class="waitlist-note" id="waitlistNote">
+      No newsletters. No spam. Your email will only be used for this launch update.
+    </p>
+    <div class="waitlist-message" id="waitlistMessage" role="status" aria-live="polite"></div>
+  </section>
+
+  <div class="footer-disclaimers">
+    <section class="footer-block">
+      <h2>Data Source Reliability</h2>
+      <p>
+        This dashboard uses publicly reachable market data endpoints for the CNN Fear &amp; Greed Index
+        and VIX market data. These sources can be delayed, revised, temporarily unavailable, or changed
+        by their providers without notice. Values should be treated as informational indicators rather
+        than guaranteed real-time quotes.
+      </p>
+    </section>
+    <section class="footer-block">
+      <h2>Disclaimer</h2>
+      <p>
+        This dashboard is for informational and educational purposes only. It is not financial advice,
+        investment advice, trading advice, or a recommendation to buy or sell any security. Always verify
+        market data with official sources before making decisions.
+      </p>
+    </section>
+    <section class="footer-block">
+      <h2>About This Dashboard</h2>
+      <p>
+        The page refreshes data automatically about every 10 minutes while it is open. VIX can update
+        during regular market hours, while the Fear &amp; Greed Index may update less frequently and may
+        reflect provider-side delays. Dates and times are displayed in the viewer's local browser timezone.
+      </p>
+    </section>
+    <section class="footer-block">
+      <h2>Methodology</h2>
+      <p>
+        Fear &amp; Greed and VIX are useful together because they look at market emotion from different
+        angles. Fear &amp; Greed summarizes broad risk appetite on a 0-100 scale, while VIX reflects expected
+        S&amp;P 500 volatility from options pricing. When Fear &amp; Greed falls and VIX rises, both often point
+        to rising uncertainty; when Fear &amp; Greed rises and VIX falls, markets are often calmer and more
+        risk-seeking.
+      </p>
+    </section>
+  </div>
+  <nav class="footer-legal" aria-label="Legal">
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/terms">Terms of Use</a>
+  </nav>
+</footer>

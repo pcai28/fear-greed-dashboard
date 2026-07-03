@@ -1,0 +1,93 @@
+@media (max-width: 820px) {
+  .shell {
+    width: min(100vw - 20px, 720px);
+    padding: var(--space-6) 0 var(--space-8);
+  }
+
+  .topbar,
+  .chart-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .topbar { padding: var(--space-4) 0 var(--space-8); }
+
+  .topbar-meta {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .top-actions { order: 2; }
+  .updated { text-align: right; white-space: normal; }
+  .quote-strip {
+    margin: var(--space-8) 0;
+    padding: var(--space-12) 0;
+  }
+  .quote-strip blockquote { font-size: 1.125rem; white-space: normal; }
+  h1 { font-size: 2rem; line-height: 1.05; }
+  .metrics { grid-template-columns: 1fr; }
+  .metric-card { min-height: 330px; padding: var(--space-4); }
+  .metric-value { font-size: clamp(2.1rem, 12vw, 3.4rem); }
+  .metric-status { font-size: clamp(1rem, 5vw, 1.25rem); }
+  .gauge { margin-top: 4px; }
+  .gauge-svg-label { font-size: 16px; }
+  .gauge-svg-ticks { font-size: 17px; }
+  .gauge-hub { width: clamp(116px, 33%, 144px); height: clamp(98px, 27%, 124px); }
+  .definition-grid { grid-template-columns: 1fr; gap: var(--space-6); }
+  .reference-section { padding: var(--space-4); }
+  .site-footer {
+    grid-template-columns: 1fr;
+    row-gap: var(--space-6);
+    padding: var(--space-6) 0 0;
+  }
+
+  .footer-disclaimers {
+    gap: var(--space-6);
+    padding-top: var(--space-6);
+    padding-left: 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .waitlist-fields {
+    flex-direction: column;
+  }
+
+  .waitlist-block h2 { font-size: 1.125rem; }
+
+  .range-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .chart-wrap { min-height: 430px; height: 58vh; }
+  .thresholds { grid-template-columns: 1fr; gap: var(--space-3); }
+}
+
+@media (max-width: 360px) {
+  .topbar-meta {
+    align-items: flex-start;
+    flex-direction: column-reverse;
+    gap: var(--space-2);
+  }
+
+  .updated { text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gauge-svg-label,
+  .gauge-needle,
+  .alerts-link,
+  .theme-toggle,
+  .range-tabs button,
+  .chart-retry,
+  .data-retry,
+  .waitlist-form button { transition-duration: 0.01ms; }
+}
+
+@media (forced-colors: active) {
+  .legend i,
+  .gauge-segment,
+  .gauge-needle { forced-color-adjust: auto; }
+
+  canvas:focus-visible,
+  .table-wrap:focus-visible { outline: 3px solid CanvasText; }
+}

@@ -1,0 +1,7 @@
+@font-face {
+  font-family: "Archivo Narrow Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url("@fontsource-variable/archivo-narrow/files/archivo-narrow-latin-wght-normal.woff2") format("woff2-variations");
+}

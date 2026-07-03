@@ -1,0 +1,23 @@
+{
+  "name": "us-stock-market-emotions",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.11"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,green \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "build": "npm run build -w frontend",
+    "start": "npm run start -w backend",
+    "start:production": "NODE_ENV=production npm start",
+    "test": "npm run test -w backend && npm run test -w frontend",
+    "check:structure": "node scripts/check-structure.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

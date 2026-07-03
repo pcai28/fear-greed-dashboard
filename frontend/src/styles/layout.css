@@ -1,0 +1,143 @@
+.shell {
+  width: min(1180px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: var(--space-8) 0 var(--space-12);
+}
+
+.topbar {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-6) 0 var(--space-12);
+}
+
+.topbar-copy { min-width: 0; }
+
+.eyebrow {
+  margin: 0 0 var(--space-2);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.updated {
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.topbar-meta {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.alerts-link,
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-control),
+    border-color var(--motion-control),
+    color var(--motion-control),
+    filter var(--motion-control),
+    transform var(--motion-control);
+}
+
+.alerts-link::before,
+.theme-toggle::before {
+  position: absolute;
+  content: "";
+  inset: -4px;
+}
+
+.alerts-link {
+  padding: 0 var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--vix) 72%, var(--line));
+  background: var(--vix);
+  color: var(--on-vix);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.alerts-link:hover { filter: brightness(0.92); }
+
+.theme-toggle {
+  width: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+}
+
+.theme-toggle:hover {
+  border-color: var(--muted);
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+.alerts-link:active,
+.theme-toggle:active { transform: translateY(1px); }
+
+.alerts-link:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.theme-icon {
+  display: none;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+[data-theme-mode="auto"] .theme-icon-auto,
+[data-theme-mode="light"] .theme-icon-light,
+[data-theme-mode="dark"] .theme-icon-dark { display: block; }
+
+.quote-strip {
+  margin: var(--space-12) 0;
+  padding: var(--space-16) 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: center;
+}
+
+.quote-strip blockquote {
+  max-width: none;
+  margin: 0 auto;
+  font-size: 1.35rem;
+  font-weight: 650;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.quote-strip figcaption {
+  margin-top: var(--space-2);
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
