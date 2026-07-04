@@ -1,13 +1,13 @@
 .env
-.env.local
+.env.*
+!.env.example
 .DS_Store
 node_modules/
 frontend/dist/
 coverage/
+*.log
 .impeccable/
 .Rhistory
 security_best_practices_report.md
-docs/*.md
 docs/*preview*
-frontend/DESIGN.md
-frontend/PRODUCT.md
+docs/paid-sms-alerts-notes.md
