@@ -10,6 +10,7 @@ const normalizedPrivacy = privacy.replace(/\s+/g, " ");
 const normalizedTerms = terms.replace(/\s+/g, " ");
 const footer = readFileSync(resolve(root, "src/views/footer.html"), "utf8");
 const footerStyles = readFileSync(resolve(root, "src/styles/footer.css"), "utf8");
+const privacyStyles = readFileSync(resolve(root, "src/styles/privacy.css"), "utf8");
 
 describe("privacy surfaces", () => {
   it("keeps executable theme code out of inline scripts", () => {
@@ -39,6 +40,13 @@ describe("privacy surfaces", () => {
     expect(footerStyles).toMatch(/\.footer-legal\s*{[\s\S]*justify-self: end;/);
     expect(footerStyles).toMatch(/\.footer-legal\s*{[\s\S]*font-size: 0\.75rem;/);
     expect(footerStyles).toMatch(/\.footer-legal a\s*{[\s\S]*text-decoration: none;/);
+  });
+
+  it("uses a compact reading scale on the legal pages", () => {
+    expect(privacyStyles).toMatch(/\.privacy-shell h1\s*{[^}]*font-size: 2rem;/s);
+    expect(privacyStyles).toMatch(/\.privacy-shell h2\s*{[^}]*font-size: 1\.0625rem;/s);
+    expect(privacyStyles).toMatch(/\.privacy-shell li\s*{[^}]*font-size: 0\.9375rem;/s);
+    expect(privacyStyles).not.toContain("3.5rem");
   });
 
   it("publishes the required privacy disclosures", () => {
@@ -111,6 +119,12 @@ describe("privacy surfaces", () => {
     expect(normalizedTerms).toContain("total aggregate liability to you");
     expect(normalizedTerms).toContain("claim or US $10");
     expect(normalizedTerms).not.toContain("US $100");
+    expect(normalizedTerms).toContain("<h2>Disputes</h2>");
+    expect(normalizedTerms).toContain("only on an individual basis");
+    expect(normalizedTerms).toContain("class, collective, consolidated, or representative action");
+    expect(normalizedTerms).toContain("within one year after it arises");
+    expect(normalizedTerms).toContain("public injunctive relief where applicable");
+    expect(normalizedTerms).not.toContain("binding arbitration");
     expect(normalizedTerms).toContain("data-privacy-email");
     expect(normalizedTerms).toContain("The Service is available globally");
     expect(normalizedTerms).toContain("data-privacy-controller");
