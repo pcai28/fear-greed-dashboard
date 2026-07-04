@@ -15,6 +15,10 @@ const complete = {
   upstashRedisToken: "configured-production-like-token",
   waitlistDbDisabled: false,
   redisDisabled: false
+  ,turnstileSecretKey: "production-secret-key",
+  turnstileSiteKey: "production-site-key",
+  turnstileExpectedHostname: "feargreedmarket.com",
+  turnstileExpectedAction: "waitlist"
 };
 
 describe("waitlist launch gate", () => {
@@ -30,5 +34,22 @@ describe("waitlist launch gate", () => {
     expect(() => assertWaitlistLaunchReady({ ...complete, mongoRegion: "" })).toThrow(
       /MONGODB_REGION/
     );
+  });
+
+  it("rejects Cloudflare test keys at the production launch gate", () => {
+    expect(() =>
+      assertWaitlistLaunchReady({
+        ...complete,
+        turnstileSecretKey: "1x0000000000000000000000000000000AA",
+        turnstileSiteKey: "1x00000000000000000000AA"
+      })
+    ).toThrow(/TURNSTILE_SECRET_KEY.*VITE_TURNSTILE_SITE_KEY/);
+    expect(() =>
+      assertWaitlistLaunchReady({
+        ...complete,
+        turnstileSecretKey: "3x0000000000000000000000000000000AA",
+        turnstileSiteKey: "2x00000000000000000000AB"
+      })
+    ).toThrow(/TURNSTILE_SECRET_KEY.*VITE_TURNSTILE_SITE_KEY/);
   });
 });

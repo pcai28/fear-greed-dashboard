@@ -6,12 +6,15 @@ const validContactEmail =
 const validControllerName =
   controllerName.length >= 2 &&
   !/your name|operator|controller|example|tbd/i.test(controllerName);
+const turnstileSiteKey = String(import.meta.env.VITE_TURNSTILE_SITE_KEY || "").trim();
 
 export const privacyConfig = Object.freeze({
   contactEmail: validContactEmail ? contactEmail : "",
   controllerName: validControllerName ? controllerName : "",
+  turnstileSiteKey,
   waitlistEnabled:
     import.meta.env.VITE_WAITLIST_ENABLED === "1" &&
     validContactEmail &&
-    validControllerName
+    validControllerName &&
+    Boolean(turnstileSiteKey)
 });

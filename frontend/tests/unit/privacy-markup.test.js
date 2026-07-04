@@ -41,9 +41,10 @@ describe("privacy surfaces", () => {
   });
 
   it("publishes the required privacy disclosures", () => {
-    expect(privacy).toContain("Effective July 2, 2026");
+    expect(privacy).toContain("Effective July 3, 2026");
     expect(privacy).toContain("MongoDB Atlas");
     expect(privacy).toContain("Upstash");
+    expect(privacy).toContain("Cloudflare Turnstile");
     expect(privacy).toContain("Do Not Track");
     expect(privacy).toContain("automatic deletion within 30 days");
     expect(privacy).toContain("dashboard and its launch waitlist are available globally");

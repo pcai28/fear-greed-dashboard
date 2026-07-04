@@ -2,6 +2,7 @@ import request from "supertest";
 import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { createApp } from "../../src/app.js";
+import { createRateLimitStore } from "../../src/stores/rate-limit.js";
 
 const frontendFixture = resolve(import.meta.dirname, "../fixtures/frontend");
 
@@ -15,6 +16,7 @@ function dependencies(overrides = {}) {
     waitlistService: {
       signup: vi.fn().mockResolvedValue({ ok: true, message: "Saved" })
     },
+    turnstileVerifier: { verify: vi.fn().mockResolvedValue(true) },
     ...overrides
   };
 }
@@ -33,12 +35,13 @@ describe("Express API", () => {
     const { app } = createApp({ dependencies: deps, waitlistEnabled: true });
     const response = await request(app)
       .post("/api/waitlist")
-      .send({ email: "a@example.com", consent: true });
+      .send({ email: "a@example.com", consent: true, turnstileToken: "test-token" });
     expect(response.status).toBe(200);
     expect(deps.waitlistService.signup).toHaveBeenCalledWith({
       email: "a@example.com",
       consent: true
     });
+    expect(deps.turnstileVerifier.verify).toHaveBeenCalledWith("test-token");
   });
 
   it("keeps waitlist collection closed by default", async () => {
@@ -100,6 +103,46 @@ describe("Express API", () => {
     expect(response.headers["x-ratelimit-limit"]).toBe("60");
   });
 
+  it("uses sliding API windows at the boundary and reports the oldest-event reset", async () => {
+    let now = 59_999;
+    const nowSpy = vi.spyOn(Date, "now").mockImplementation(() => now);
+    const rateLimitStore = createRateLimitStore({ redis: { enabled: false }, windowMs: 60_000 });
+    const { app } = createApp({ dependencies: dependencies({ rateLimitStore }), rateLimitMax: 2 });
+
+    expect((await request(app).get("/api/market-emotions")).status).toBe(200);
+    now = 60_000;
+    const second = await request(app).get("/api/market-emotions");
+    expect(second.headers["x-ratelimit-remaining"]).toBe("0");
+    now = 60_001;
+    const blocked = await request(app).get("/api/market-emotions");
+    expect(blocked.status).toBe(429);
+    expect(blocked.headers["x-ratelimit-reset"]).toBe("120");
+    expect(blocked.headers["retry-after"]).toBe("60");
+    now = 120_000;
+    const afterEviction = await request(app).get("/api/market-emotions");
+    expect(afterEviction.status).toBe(200);
+    expect(afterEviction.headers["x-ratelimit-remaining"]).toBe("1");
+    nowSpy.mockRestore();
+  });
+
+  it.each([
+    ["missing", undefined, 400],
+    ["failed", "failed-token", 400],
+    ["expired or reused", "duplicate-token", 400],
+    ["provider outage", "provider-down", 503]
+  ])("does not write MongoDB when Turnstile is %s", async (_name, token, status) => {
+    const error = new Error("verification rejected");
+    error.status = status;
+    error.publicMessage = status === 503 ? "Security check unavailable." : "Security check failed.";
+    const deps = dependencies({ turnstileVerifier: { verify: vi.fn().mockRejectedValue(error) } });
+    const { app } = createApp({ dependencies: deps, waitlistEnabled: true });
+    const response = await request(app)
+      .post("/api/waitlist")
+      .send({ email: "a@example.com", consent: true, turnstileToken: token });
+    expect(response.status).toBe(status);
+    expect(deps.waitlistService.signup).not.toHaveBeenCalled();
+  });
+
   it("limits waitlist submissions to three per minute without consuming the global scope", async () => {
     const counts = new Map();
     const rateLimitStore = {
@@ -115,7 +158,7 @@ describe("Express API", () => {
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const response = await request(app)
         .post("/api/waitlist")
-        .send({ email: `user${attempt}@example.com`, consent: true });
+        .send({ email: `user${attempt}@example.com`, consent: true, turnstileToken: `token-${attempt}` });
       expect(response.status).toBe(200);
       expect(response.headers["x-ratelimit-limit"]).toBe("3");
       expect(response.headers["x-ratelimit-remaining"]).toBe(String(2 - attempt));
@@ -123,7 +166,7 @@ describe("Express API", () => {
 
     const blocked = await request(app)
       .post("/api/waitlist")
-      .send({ email: "blocked@example.com", consent: true });
+      .send({ email: "blocked@example.com", consent: true, turnstileToken: "blocked-token" });
     expect(blocked.status).toBe(429);
     expect(blocked.headers["x-ratelimit-limit"]).toBe("3");
     expect(blocked.headers["x-ratelimit-remaining"]).toBe("0");
@@ -200,11 +243,16 @@ describe("Express API", () => {
   it("sets the production security-header baseline", async () => {
     const { app } = createApp({ dependencies: dependencies(), isProduction: true });
     const response = await request(app).get("/api/market-emotions");
-    expect(response.headers["content-security-policy"]).toContain("script-src 'self'");
+    expect(response.headers["content-security-policy"]).toContain(
+      "script-src 'self' https://challenges.cloudflare.com"
+    );
     expect(response.headers["content-security-policy"]).toContain("script-src-attr 'none'");
     expect(response.headers["content-security-policy"]).toContain("img-src 'self' data: blob:");
     expect(response.headers["content-security-policy"]).toContain("form-action 'self'");
     expect(response.headers["content-security-policy"]).toContain("frame-ancestors 'none'");
+    expect(response.headers["content-security-policy"]).toContain(
+      "frame-src https://challenges.cloudflare.com"
+    );
     expect(response.headers["content-security-policy"]).toContain("upgrade-insecure-requests");
     expect(response.headers["x-content-type-options"]).toBe("nosniff");
     expect(response.headers["x-frame-options"]).toBe("DENY");

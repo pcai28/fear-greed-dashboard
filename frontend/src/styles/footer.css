@@ -142,6 +142,15 @@
   margin: 0.1em 0 0;
   padding: 0;
 }
+.waitlist-challenge {
+  min-height: 1px;
+  max-width: 300px;
+}
+
+.waitlist-challenge iframe:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
 .waitlist-note {
   max-width: 58ch;
   margin-top: var(--space-3) !important;

@@ -26,7 +26,7 @@ export function createRateLimitMiddleware({
       const identifier = createHmac("sha256", hashSecret)
         .update(`${scope}\0${clientIp(request, clientIpHeader)}`)
         .digest("hex");
-      const result = await store.increment(identifier);
+      const result = await store.increment(identifier, { limit });
       const remaining = Math.max(0, limit - result.count);
       const retryAfter = Math.max(1, Math.ceil((result.resetAt - Date.now()) / 1000));
 
@@ -34,7 +34,8 @@ export function createRateLimitMiddleware({
       response.setHeader("x-ratelimit-remaining", String(remaining));
       response.setHeader("x-ratelimit-reset", String(Math.ceil(result.resetAt / 1000)));
 
-      if (result.count <= limit) return next();
+      const allowed = result.allowed ?? result.count <= limit;
+      if (allowed) return next();
 
       response.setHeader("retry-after", String(retryAfter));
       response.status(429).json({

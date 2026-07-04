@@ -14,6 +14,10 @@ function positiveInteger(value, fallback = 0) {
   return Number.isInteger(parsed) && parsed >= 0 ? parsed : fallback;
 }
 
+function isTurnstileTestKey(value) {
+  return /^[123]x0{10,}/i.test(String(value || ""));
+}
+
 export const env = Object.freeze({
   isProduction,
   host: process.env.HOST || (isProduction ? "0.0.0.0" : "127.0.0.1"),
@@ -31,6 +35,10 @@ export const env = Object.freeze({
   redisDisabled: process.env.DISABLE_REDIS_CACHE === "1",
   waitlistDbDisabled: process.env.DISABLE_WAITLIST_DB === "1",
   waitlistEnabled: process.env.WAITLIST_ENABLED === "1",
+  turnstileSecretKey: process.env.TURNSTILE_SECRET_KEY,
+  turnstileSiteKey: process.env.VITE_TURNSTILE_SITE_KEY,
+  turnstileExpectedHostname: process.env.TURNSTILE_EXPECTED_HOSTNAME,
+  turnstileExpectedAction: process.env.TURNSTILE_EXPECTED_ACTION || "waitlist",
   privacyControllerName: process.env.PRIVACY_CONTROLLER_NAME,
   privacyContactEmail: process.env.PRIVACY_CONTACT_EMAIL,
   businessPostalAddress: process.env.BUSINESS_POSTAL_ADDRESS,
@@ -72,6 +80,18 @@ export function assertWaitlistLaunchReady(config = env) {
       Boolean(config.upstashRedisUrl) && !/example\.upstash|redis\.internal/i.test(config.upstashRedisUrl),
     UPSTASH_REDIS_REST_TOKEN:
       Boolean(config.upstashRedisToken) && !/replace-with|test-token/i.test(config.upstashRedisToken),
+    TURNSTILE_SECRET_KEY:
+      Boolean(config.turnstileSecretKey) &&
+      !/replace-with/i.test(config.turnstileSecretKey) &&
+      !isTurnstileTestKey(config.turnstileSecretKey),
+    VITE_TURNSTILE_SITE_KEY:
+      Boolean(config.turnstileSiteKey) &&
+      !/replace-with/i.test(config.turnstileSiteKey) &&
+      !isTurnstileTestKey(config.turnstileSiteKey),
+    TURNSTILE_EXPECTED_HOSTNAME:
+      Boolean(config.turnstileExpectedHostname) &&
+      !/example|localhost|unknown|tbd/i.test(config.turnstileExpectedHostname),
+    TURNSTILE_EXPECTED_ACTION: config.turnstileExpectedAction === "waitlist",
     WAITLIST_DATABASE_ENABLED: !config.waitlistDbDisabled,
     REDIS_ENABLED: !config.redisDisabled
   };

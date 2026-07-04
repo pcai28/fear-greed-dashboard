@@ -16,6 +16,7 @@ export function createApp({
   frontendDist = env.frontendDist,
   isProduction = env.isProduction,
   waitlistEnabled = env.waitlistEnabled,
+  rateLimitMax = env.rateLimitMax,
   waitlistRateLimitMax = env.waitlistRateLimitMax,
   clientIpHeader = env.clientIpHeader,
   logger = console
@@ -40,7 +41,7 @@ export function createApp({
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'"],
+          scriptSrc: ["'self'", "https://challenges.cloudflare.com"],
           scriptSrcAttr: ["'none'"],
           styleSrc: ["'self'", "'unsafe-inline'"],
           connectSrc: ["'self'"],
@@ -51,7 +52,7 @@ export function createApp({
           baseUri: ["'none'"],
           formAction: ["'self'"],
           frameAncestors: ["'none'"],
-          frameSrc: ["'none'"],
+          frameSrc: ["https://challenges.cloudflare.com"],
           workerSrc: ["'none'"],
           upgradeInsecureRequests: isProduction ? [] : null
         }
@@ -77,7 +78,7 @@ export function createApp({
     "/api",
     createRateLimitMiddleware({
       store: dependencies.rateLimitStore,
-      limit: env.rateLimitMax,
+      limit: rateLimitMax,
       hashSecret: env.rateLimitHashSecret,
       clientIpHeader
     })
@@ -96,7 +97,11 @@ export function createApp({
       clientIpHeader,
       scope: "waitlist"
     }),
-    createWaitlistRouter({ service: dependencies.waitlistService, enabled: waitlistEnabled })
+    createWaitlistRouter({
+      service: dependencies.waitlistService,
+      turnstile: dependencies.turnstileVerifier,
+      enabled: waitlistEnabled
+    })
   );
 
   if (serveFrontend && existsSync(frontendDist)) {

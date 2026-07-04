@@ -6,6 +6,7 @@ import { privacyConfig } from "./config/privacy.js";
 import { createDashboardController } from "./dashboard/controller.js";
 import { createChart } from "./features/chart/renderer.js";
 import { createWaitlistForm } from "./features/form/waitlist.js";
+import { createTurnstileChallenge } from "./features/form/turnstile.js";
 import { createGauge } from "./features/gauges/renderer.js";
 import { fearState, vixState } from "./features/gauges/status.js";
 import { createRepeatableAnchor } from "./features/navigation/repeatable-anchor.js";
@@ -51,12 +52,26 @@ createThemeController({
   button: elements.themeToggle,
   onChange: chart.refreshTheme
 }).init();
+const waitlistChallenge = createTurnstileChallenge({
+  container: elements.waitlistChallenge,
+  siteKey: privacyConfig.turnstileSiteKey,
+  onState(state) {
+    if (state === "expired") {
+      elements.waitlistMessage.textContent = "The security check expired. Complete it again.";
+      elements.waitlistMessage.className = "waitlist-message error";
+    } else if (state === "error") {
+      elements.waitlistMessage.textContent = "The security check failed. Please retry.";
+      elements.waitlistMessage.className = "waitlist-message error";
+    }
+  }
+});
 createWaitlistForm({
   form: elements.waitlistForm,
   emailInput: elements.waitlistEmail,
   consentInput: elements.waitlistConsent,
   message: elements.waitlistMessage,
   submitEmail: submitWaitlistEmail,
+  challenge: waitlistChallenge,
   enabled: privacyConfig.waitlistEnabled
 }).init();
 createShareController({ elements, chart }).init();

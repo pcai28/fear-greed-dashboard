@@ -12,12 +12,16 @@ describe("waitlist API", () => {
     });
     vi.stubGlobal("fetch", fetch);
 
-    await submitWaitlistEmail("user@example.com", true);
+    await submitWaitlistEmail("user@example.com", true, "test-token");
 
     expect(fetch).toHaveBeenCalledWith("/api/waitlist", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email: "user@example.com", consent: true })
+      body: JSON.stringify({
+        email: "user@example.com",
+        consent: true,
+        turnstileToken: "test-token"
+      })
     });
   });
 });
@@ -58,12 +62,19 @@ function formParts({ checked = false } = {}) {
     className: "waitlist-message",
     classList: { contains: vi.fn(() => false) }
   };
+  const challenge = {
+    init: vi.fn().mockResolvedValue(undefined),
+    getToken: vi.fn(() => "test-token"),
+    reset: vi.fn(),
+    focus: vi.fn()
+  };
   return {
     button,
     emailInput,
     form,
     message,
     consentInput,
+    challenge,
     submit: async () => submitHandler({ preventDefault: vi.fn() })
   };
 }
@@ -81,10 +92,21 @@ describe("waitlist form", () => {
   it("does not submit without launch-notification consent", async () => {
     const parts = formParts({ checked: false });
     const submitEmail = vi.fn();
-    createWaitlistForm({ ...parts, submitEmail, enabled: true }).init();
+    await createWaitlistForm({ ...parts, submitEmail, enabled: true }).init();
     await parts.submit();
     expect(submitEmail).not.toHaveBeenCalled();
     expect(parts.consentInput.focus).toHaveBeenCalled();
     expect(parts.message.textContent).toContain("Agree to the one-time launch notification");
+  });
+
+  it("requires a current security token before submitting", async () => {
+    const parts = formParts({ checked: true });
+    parts.challenge.getToken.mockReturnValue("");
+    const submitEmail = vi.fn();
+    await createWaitlistForm({ ...parts, submitEmail, enabled: true }).init();
+    await parts.submit();
+    expect(submitEmail).not.toHaveBeenCalled();
+    expect(parts.challenge.focus).toHaveBeenCalled();
+    expect(parts.message.textContent).toContain("Complete the security check");
   });
 });

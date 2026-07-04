@@ -31,6 +31,7 @@ export function getDashboardElements() {
     waitlistForm: document.querySelector("#waitlistForm"),
     waitlistEmail: document.querySelector("#waitlistEmail"),
     waitlistConsent: document.querySelector("#waitlistConsent"),
+    waitlistChallenge: document.querySelector("#waitlistChallenge"),
     waitlistMessage: document.querySelector("#waitlistMessage"),
     shareDialog: document.querySelector("#shareDialog"),
     shareDialogTitle: document.querySelector("#shareDialogTitle"),

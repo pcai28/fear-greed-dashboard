@@ -9,12 +9,13 @@ export function createWaitlistForm({
   consentInput,
   message,
   submitEmail,
+  challenge,
   enabled = false
 }) {
   if (!form) return { init() {} };
 
   return {
-    init() {
+    async init() {
       const submitButton = form.querySelector("button[type='submit']");
       if (!enabled) {
         emailInput.disabled = true;
@@ -26,7 +27,16 @@ export function createWaitlistForm({
 
       emailInput.disabled = false;
       consentInput.disabled = false;
-      submitButton.disabled = false;
+      submitButton.disabled = true;
+      setMessage(message, "Loading security check...");
+      try {
+        await challenge.init();
+        submitButton.disabled = false;
+        if (!message.classList.contains("error")) setMessage(message, "");
+      } catch (error) {
+        setMessage(message, `${error.message} Refresh the page to retry.`, "error");
+        return;
+      }
       emailInput.addEventListener("input", () => {
         emailInput.setAttribute("aria-invalid", "false");
         if (message.classList.contains("error")) setMessage(message, "");
@@ -52,6 +62,12 @@ export function createWaitlistForm({
           consentInput.focus();
           return;
         }
+        const turnstileToken = challenge.getToken();
+        if (!turnstileToken) {
+          setMessage(message, "Complete the security check, then try again.", "error");
+          challenge.focus();
+          return;
+        }
 
         const originalLabel = submitButton.textContent;
         form.dataset.submitting = "true";
@@ -60,14 +76,16 @@ export function createWaitlistForm({
         submitButton.textContent = "Saving...";
         setMessage(message, "Saving your email...");
         try {
-          const result = await submitEmail(email, true);
+          const result = await submitEmail(email, true, turnstileToken);
           form.reset();
+          challenge.reset();
           setMessage(
             message,
             result.message || "Thanks — I’ll let you know when SMS alerts are available.",
             "success"
           );
         } catch (error) {
+          challenge.reset();
           const fallback =
             error.status === 429
               ? "Too many attempts. Wait a moment and try again."

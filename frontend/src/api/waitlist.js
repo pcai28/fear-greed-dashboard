@@ -1,8 +1,8 @@
-export async function submitWaitlistEmail(email, consent) {
+export async function submitWaitlistEmail(email, consent, turnstileToken) {
   const response = await fetch("/api/waitlist", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ email, consent })
+    body: JSON.stringify({ email, consent, turnstileToken })
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) {

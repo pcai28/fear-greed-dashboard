@@ -5,6 +5,7 @@ import { createCnnFearGreedProvider } from "./providers/cnn-fear-greed.js";
 import { createYahooVixProvider } from "./providers/yahoo-vix.js";
 import { createMarketDataService } from "./services/market-data.js";
 import { createWaitlistService } from "./services/waitlist.js";
+import { createTurnstileVerifier } from "./services/turnstile.js";
 import { createCacheStore } from "./stores/cache.js";
 import { createRateLimitStore } from "./stores/rate-limit.js";
 
@@ -33,6 +34,11 @@ export function createDefaultDependencies() {
       fetchVix: createYahooVixProvider(),
       fetchFearGreed: createCnnFearGreedProvider()
     }),
-    waitlistService: createWaitlistService({ mongo })
+    waitlistService: createWaitlistService({ mongo }),
+    turnstileVerifier: createTurnstileVerifier({
+      secret: env.turnstileSecretKey,
+      expectedHostname: env.turnstileExpectedHostname,
+      expectedAction: env.turnstileExpectedAction
+    })
   };
 }

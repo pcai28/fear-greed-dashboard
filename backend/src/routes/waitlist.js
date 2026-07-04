@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-export function createWaitlistRouter({ service, enabled = false }) {
+export function createWaitlistRouter({ service, turnstile, enabled = false }) {
   const router = Router();
 
   router.post("/", async (request, response, next) => {
@@ -11,6 +11,7 @@ export function createWaitlistRouter({ service, enabled = false }) {
         error.publicMessage = "The waitlist is not accepting signups yet.";
         throw error;
       }
+      await turnstile.verify(request.body?.turnstileToken);
       const result = await service.signup({
         email: request.body?.email,
         consent: request.body?.consent
