@@ -27,23 +27,22 @@ before any MongoDB write and fails closed on timeout or provider failure.
 
 ## Client IP source
 
-The application validates the selected header as one IPv4 or IPv6 address, immediately HMACs it, and
-stores only the digest for short-lived rate limiting.
+Set `CLIENT_IP_HEADER=x-forwarded-for`. The application takes the first (leftmost) entry in Railway's
+`X-Forwarded-For` chain, validates it as IPv4 or IPv6, immediately HMACs it, and stores only the digest
+for short-lived rate limiting. Railway currently recommends this entry because its edge proxy controls
+the header and appends proxy entries after the real client IP. `X-Real-IP` is not reliable when
+Railway's CDN path is active; see the [Railway employee guidance](https://station.railway.com/questions/which-header-should-i-rely-on-for-real-c-d78a6f96).
 
-- Direct Railway traffic or Cloudflare DNS-only: `CLIENT_IP_HEADER=x-real-ip`.
-- Cloudflare proxied custom domain (orange cloud): `CLIENT_IP_HEADER=cf-connecting-ip`.
-- Keep `TRUSTED_PROXY_HOPS=0`; the application reads only the explicitly selected Railway/Cloudflare
-  single-value header instead of parsing an arbitrary `X-Forwarded-For` chain.
-
-Never use these IP headers for authentication or authorization. Before selecting `cf-connecting-ip`,
-verify the production custom domain is actually proxied by Cloudflare and remove any unnecessary
-Railway-generated public domain to reduce proxy bypass paths.
+Keep `TRUSTED_PROXY_HOPS=0`; the application performs this Railway-specific parsing explicitly rather
+than delegating an arbitrary proxy chain to Express. This deployment assumes public requests arrive
+through Railway's edge. Never use the derived IP for authentication or authorization.
 
 ## Domain and smoke test
 
-Add the custom domain in Railway first, then copy Railway's CNAME and TXT records to Cloudflare. If
-Cloudflare proxying is enabled, follow Railway's current SSL instructions and confirm Railway reports
-that the Cloudflare proxy was detected.
+Add the custom domain in Railway first, then copy Railway's CNAME and TXT records to the DNS provider.
+Keep any external reverse-proxy/CDN feature disabled so public traffic terminates at Railway's edge and
+the documented `X-Forwarded-For` guarantee applies. Cloudflare Turnstile is an independent anti-bot
+service and does not require the custom domain's traffic to be proxied through Cloudflare.
 
 After deployment, verify:
 

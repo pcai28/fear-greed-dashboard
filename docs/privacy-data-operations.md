@@ -25,7 +25,9 @@ Keep `WAITLIST_ENABLED=0` and `VITE_WAITLIST_ENABLED=0` until every item below i
   `VITE_PRIVACY_CONTROLLER_NAME`. This value is public and must not be only a brand alias.
 - Record the hosting, MongoDB Atlas, and Upstash cloud provider plus exact region in `APP_REGION`,
   `MONGODB_REGION`, and `UPSTASH_REGION`. Use provider consoles; never infer region from hostnames.
-- Prefer one US-West geography for all three services and document any backup/read-replica regions.
+- Co-locate Railway, MongoDB Atlas, and Upstash where practical; the current deployment target is
+  Railway US East near the Northern Virginia database and cache primaries. Document any
+  backup/read-replica regions.
 - Record hosting access-log retention and disable request-body logging. Target seven days or less where
   the provider supports it.
 - Sign or accept applicable data-processing terms for MongoDB, Upstash, hosting, and business email.
@@ -35,11 +37,9 @@ Keep `WAITLIST_ENABLED=0` and `VITE_WAITLIST_ENABLED=0` until every item below i
   `TURNSTILE_SECRET_KEY`, `VITE_TURNSTILE_SITE_KEY`, `TURNSTILE_EXPECTED_HOSTNAME`, and the fixed
   `TURNSTILE_EXPECTED_ACTION=waitlist`. Test keys are accepted only by automated tests and are
   rejected by the production launch gate.
-- Set `TRUSTED_PROXY_HOPS` to the documented proxy hop count. Leave it at `0` for direct hosting;
-  never copy an arbitrary value from an example.
-- For Railway, keep `TRUSTED_PROXY_HOPS=0` and set `CLIENT_IP_HEADER=x-real-ip`. If the production
-  custom domain is later proxied through Cloudflare, use `CLIENT_IP_HEADER=cf-connecting-ip` after
-  verifying the proxy is active.
+- For Railway, keep `TRUSTED_PROXY_HOPS=0` and set `CLIENT_IP_HEADER=x-forwarded-for`. The application
+  validates and HMACs only the first (leftmost) IP, which Railway's edge guarantees is the real client
+  IP. Do not enable an external reverse proxy without re-evaluating this trust boundary.
 - Review the current Yahoo and CNN endpoint terms. Record the review date and reviewer. If automated
   retrieval is not permitted, replace that provider before launch.
 - Run `npm test`, `npm run build`, and a production HTTP-header smoke test.
