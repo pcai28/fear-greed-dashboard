@@ -141,22 +141,26 @@ describe("Express API", () => {
     expect(new Set(identifiers)).toHaveLength(2);
   });
 
-  it("uses a hashed client identifier and ignores an untrusted forwarded IP", async () => {
+  it("ignores forwarded IPs when the trusted header is disabled", async () => {
     const deps = dependencies();
-    const { app } = createApp({ dependencies: deps });
+    const { app } = createApp({ dependencies: deps, clientIpHeader: "" });
     await request(app).get("/api/market-emotions").set("x-forwarded-for", "203.0.113.9");
-    const identifier = deps.rateLimitStore.increment.mock.calls[0][0];
-    expect(identifier).toMatch(/^[a-f0-9]{64}$/);
-    expect(identifier).not.toContain("203.0.113.9");
+    await request(app).get("/api/market-emotions").set("x-forwarded-for", "203.0.113.10");
+    const identifiers = deps.rateLimitStore.increment.mock.calls.map(([identifier]) => identifier);
+    expect(identifiers[0]).toBe(identifiers[1]);
   });
 
-  it("hashes a validated Railway client IP without storing the raw header", async () => {
+  it("hashes the leftmost Railway forwarded IP without storing the raw header", async () => {
     const first = dependencies();
     const second = dependencies();
-    const firstApp = createApp({ dependencies: first, clientIpHeader: "x-real-ip" }).app;
-    const secondApp = createApp({ dependencies: second, clientIpHeader: "x-real-ip" }).app;
-    await request(firstApp).get("/api/market-emotions").set("x-real-ip", "203.0.113.10");
-    await request(secondApp).get("/api/market-emotions").set("x-real-ip", "203.0.113.11");
+    const firstApp = createApp({ dependencies: first, clientIpHeader: "x-forwarded-for" }).app;
+    const secondApp = createApp({ dependencies: second, clientIpHeader: "x-forwarded-for" }).app;
+    await request(firstApp)
+      .get("/api/market-emotions")
+      .set("x-forwarded-for", "203.0.113.10, 198.51.100.20");
+    await request(secondApp)
+      .get("/api/market-emotions")
+      .set("x-forwarded-for", "203.0.113.11, 198.51.100.20");
     const firstIdentifier = first.rateLimitStore.increment.mock.calls[0][0];
     const secondIdentifier = second.rateLimitStore.increment.mock.calls[0][0];
     expect(firstIdentifier).toMatch(/^[a-f0-9]{64}$/);
@@ -164,10 +168,32 @@ describe("Express API", () => {
     expect(firstIdentifier).not.toBe(secondIdentifier);
   });
 
+  it("ignores proxy entries appended after the Railway client IP", async () => {
+    const deps = dependencies();
+    const { app } = createApp({ dependencies: deps, clientIpHeader: "x-forwarded-for" });
+    await request(app)
+      .get("/api/market-emotions")
+      .set("x-forwarded-for", "203.0.113.10, 198.51.100.20");
+    await request(app)
+      .get("/api/market-emotions")
+      .set("x-forwarded-for", "203.0.113.10, 198.51.100.21, 192.0.2.30");
+    const identifiers = deps.rateLimitStore.increment.mock.calls.map(([identifier]) => identifier);
+    expect(identifiers[0]).toBe(identifiers[1]);
+  });
+
+  it("ignores unsupported provider-specific client IP headers", async () => {
+    const deps = dependencies();
+    const { app } = createApp({ dependencies: deps, clientIpHeader: "x-client-ip" });
+    await request(app).get("/api/market-emotions").set("x-client-ip", "203.0.113.10");
+    await request(app).get("/api/market-emotions").set("x-client-ip", "203.0.113.11");
+    const identifiers = deps.rateLimitStore.increment.mock.calls.map(([identifier]) => identifier);
+    expect(identifiers[0]).toBe(identifiers[1]);
+  });
+
   it("falls back safely when the configured client IP header is malformed", async () => {
     const deps = dependencies();
-    const { app } = createApp({ dependencies: deps, clientIpHeader: "x-real-ip" });
-    await request(app).get("/api/market-emotions").set("x-real-ip", "not-an-ip");
+    const { app } = createApp({ dependencies: deps, clientIpHeader: "x-forwarded-for" });
+    await request(app).get("/api/market-emotions").set("x-forwarded-for", "not-an-ip");
     expect(deps.rateLimitStore.increment.mock.calls[0][0]).toMatch(/^[a-f0-9]{64}$/);
   });
 

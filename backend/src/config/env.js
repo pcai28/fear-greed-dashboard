@@ -26,7 +26,7 @@ export const env = Object.freeze({
   rateLimitHashSecret:
     process.env.RATE_LIMIT_HMAC_SECRET || (isProduction ? undefined : "local-development-only"),
   rateLimitHashSecretConfigured: Boolean(process.env.RATE_LIMIT_HMAC_SECRET),
-  clientIpHeader: process.env.CLIENT_IP_HEADER || (isProduction ? "x-real-ip" : ""),
+  clientIpHeader: process.env.CLIENT_IP_HEADER || (isProduction ? "x-forwarded-for" : ""),
   trustedProxyHops: positiveInteger(process.env.TRUSTED_PROXY_HOPS),
   redisDisabled: process.env.DISABLE_REDIS_CACHE === "1",
   waitlistDbDisabled: process.env.DISABLE_WAITLIST_DB === "1",

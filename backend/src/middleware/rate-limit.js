@@ -1,12 +1,12 @@
 import { createHmac } from "node:crypto";
 import { isIP } from "node:net";
 
-const supportedClientIpHeaders = new Set(["x-real-ip", "cf-connecting-ip"]);
+const trustedClientIpHeader = "x-forwarded-for";
 
 function clientIp(request, configuredHeader) {
   const header = String(configuredHeader || "").toLowerCase();
-  if (supportedClientIpHeaders.has(header)) {
-    const value = request.get(header)?.trim();
+  if (header === trustedClientIpHeader) {
+    const value = request.get(header)?.split(",", 1)[0]?.trim();
     if (value && isIP(value)) return value;
   }
   const fallback = request.ip || request.socket.remoteAddress || "unknown";
