@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { extname, join, relative } from "node:path";
 
-const roots = ["backend/src", "frontend/src"];
+const roots = ["backend/src", "frontend/src", "shared/src"];
 const checkedExtensions = new Set([".js", ".css", ".html"]);
 const maxLines = 200;
 const failures = [];

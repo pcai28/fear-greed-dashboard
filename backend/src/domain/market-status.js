@@ -1,3 +1,18 @@
+import { fearGreedBand, vixBand } from "../../../shared/src/market-sentiment.js";
+
+const fearGreedLabels = {
+  "extreme-fear": "Extreme Fear",
+  fear: "Fear",
+  neutral: "Neutral",
+  greed: "Greed",
+  "extreme-greed": "Extreme Greed"
+};
+const vixLabels = {
+  calm: "Calm & Stable",
+  moderate: "Moderate Uncertainty & Caution",
+  significant: "Significant Fear & Uncertainty"
+};
+
 export function asNumber(value) {
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
@@ -9,19 +24,11 @@ export function toIsoDate(input) {
 }
 
 export function fearGreedStatus(value) {
-  if (value == null) return "Unavailable";
-  if (value <= 25) return "Extreme Fear";
-  if (value <= 45) return "Fear";
-  if (value <= 55) return "Neutral";
-  if (value <= 75) return "Greed";
-  return "Extreme Greed";
+  return fearGreedLabels[fearGreedBand(value)] || "Unavailable";
 }
 
 export function vixStatus(value) {
-  if (value == null) return "Unavailable";
-  if (value < 15) return "Calm & Stable";
-  if (value <= 30) return "Moderate Uncertainty & Caution";
-  return "Significant Fear & Uncertainty";
+  return vixLabels[vixBand(value)] || "Unavailable";
 }
 
 export function titleStatus(value) {
