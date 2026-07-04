@@ -6,6 +6,7 @@ const root = resolve(import.meta.dirname, "../..");
 const index = readFileSync(resolve(root, "index.html"), "utf8");
 const privacy = readFileSync(resolve(root, "privacy.html"), "utf8");
 const terms = readFileSync(resolve(root, "terms.html"), "utf8");
+const normalizedPrivacy = privacy.replace(/\s+/g, " ");
 const normalizedTerms = terms.replace(/\s+/g, " ");
 const footer = readFileSync(resolve(root, "src/views/footer.html"), "utf8");
 const footerStyles = readFileSync(resolve(root, "src/styles/footer.css"), "utf8");
@@ -41,10 +42,18 @@ describe("privacy surfaces", () => {
   });
 
   it("publishes the required privacy disclosures", () => {
-    expect(privacy).toContain("Effective July 3, 2026");
-    expect(privacy).toContain("MongoDB Atlas");
-    expect(privacy).toContain("Upstash");
-    expect(privacy).toContain("Cloudflare Turnstile");
+    expect(privacy).toContain("Effective July 4, 2026");
+    expect(privacy).not.toContain("MongoDB Atlas");
+    expect(privacy).not.toContain("Upstash");
+    expect(privacy).not.toContain("Cloudflare Turnstile");
+    expect(privacy).toContain("service providers for hosting, data storage, caching, security checks");
+    expect(privacy).toContain("rate-limit record typically expires about 65 seconds");
+    expect(normalizedPrivacy).toContain(
+      "does not intentionally store the raw IP in its rate-limit records"
+    );
+    expect(normalizedPrivacy).toContain(
+      "Providing an email, giving consent, and completing the security check are optional"
+    );
     expect(privacy).toContain("Do Not Track");
     expect(privacy).toContain("automatic deletion within 30 days");
     expect(privacy).toContain("dashboard and its launch waitlist are available globally");
@@ -57,13 +66,18 @@ describe("privacy surfaces", () => {
     expect(privacy).toContain("honor recognized");
     expect(privacy).toContain("Waitlist consent covers only the one launch notification");
     expect(privacy).toContain("does not authorize advertising, data sales, or cross-site profiling");
+    expect(normalizedPrivacy).toContain("The Service is not intended for anyone under 18");
+    expect(privacy).not.toContain("children under 16");
     expect(privacy).not.toContain("This policy describes current practices and is not legal advice");
     expect(privacy).not.toContain("The data controller is");
     expect(privacy).not.toContain("The controller is");
   });
 
   it("publishes the current service terms and core protections", () => {
-    expect(normalizedTerms).toContain("Effective July 2, 2026");
+    expect(normalizedTerms).toContain("Effective July 4, 2026");
+    expect(normalizedTerms).toContain("The Service is intended only for people who are at least 18 years old");
+    expect(normalizedTerms).toContain("If you are under 18, do not access or use");
+    expect(normalizedTerms).not.toContain("involvement of a parent or legal guardian");
     expect(normalizedTerms).toContain("informational and educational purposes only");
     expect(normalizedTerms).toContain(
       "does not provide financial, investment, legal, tax, or trading advice"
@@ -98,7 +112,7 @@ describe("privacy surfaces", () => {
     expect(normalizedTerms).toContain("claim or US $10");
     expect(normalizedTerms).not.toContain("US $100");
     expect(normalizedTerms).toContain("data-privacy-email");
-    expect(normalizedTerms).toContain("launch waitlist are available globally");
+    expect(normalizedTerms).toContain("The Service is available globally");
     expect(normalizedTerms).toContain("data-privacy-controller");
     expect(normalizedTerms).toContain("US Stock Market Emotions is operated by");
     expect(normalizedTerms).not.toContain("reviewed by qualified US counsel");
