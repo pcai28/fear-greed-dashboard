@@ -48,6 +48,12 @@ I learned how to keep responsibilities separated: routes handle HTTP, services h
 
 Another important challenge was data reliability. External market data can be delayed, unavailable, or change shape, so the app includes validation, caching, stale fallback, retry states, and clear user-facing messages instead of assuming every request will succeed.
 
+I also learned how to protect a public signup endpoint. For `/api/waitlist`, the app uses three layers:
+
+- Rate limit: 3 requests per minute to control request frequency
+- CAPTCHA: Cloudflare Turnstile to help distinguish humans from bots
+- Backend email validation: server-side format checks to improve data quality
+
 ## Local development
 
 Install dependencies:
