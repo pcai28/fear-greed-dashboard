@@ -36,7 +36,7 @@ Second, I wanted to create a tool that I personally want to check every day. I f
 - Waitlist signup for future SMS alerts
 - Privacy and terms pages
 
-## 5. Challenge / learning
+## 5. Learning
 
 The biggest learning was understanding how production-style data flow works across a full-stack app:
 
@@ -53,6 +53,9 @@ I also learned how to protect a public signup endpoint. For `/api/waitlist`, the
 - Rate limit: 3 requests per minute to control request frequency
 - CAPTCHA: Cloudflare Turnstile to help distinguish humans from bots
 - Backend email validation: server-side format checks to improve data quality
+
+## Live Link
+[https://fear-greed-market.up.railway.app/](https://fear-greed-market.up.railway.app/)
 
 ## Local development
 
