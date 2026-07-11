@@ -55,7 +55,7 @@ I also learned how to protect a public signup endpoint. For `/api/waitlist`, the
 - Backend email validation: server-side format checks to improve data quality
 
 ## Live Link
-[https://fear-greed-market.up.railway.app/](https://fear-greed-market.up.railway.app/)
+[https://fear-greed-market.up.railway.app/](https://fear-greed-market.up.railway.app/){:target="_blank"}
 
 ## Local development
 
