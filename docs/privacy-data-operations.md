@@ -40,8 +40,10 @@ Keep `WAITLIST_ENABLED=0` and `VITE_WAITLIST_ENABLED=0` until every item below i
 - For Railway, keep `TRUSTED_PROXY_HOPS=0` and set `CLIENT_IP_HEADER=x-forwarded-for`. The application
   validates and HMACs only the first (leftmost) IP, which Railway's edge guarantees is the real client
   IP. Do not enable an external reverse proxy without re-evaluating this trust boundary.
-- Review the current Yahoo and CNN endpoint terms. Record the review date and reviewer. If automated
-  retrieval is not permitted, replace that provider before launch.
+- For a long-term public service or commercial launch, review the current Yahoo and CNN endpoint terms.
+  Record the review date and reviewer. If automated retrieval is not permitted, replace that provider
+  before launch. For a short-term personal learning or teaching demo that is not actively promoted or
+  indexed, document that limited use in the local launch record instead of treating this as a blocker.
 - Run `npm test`, `npm run build`, and a production HTTP-header smoke test.
 
 The backend refuses to start with the waitlist enabled when any required launch-gate environment value
