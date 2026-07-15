@@ -1,63 +1,92 @@
 # Data Caching and Source Reliability Notes
 
-This note summarizes how the dashboard currently caches market data and what to consider before production deployment.
+This note describes the dashboard's current market-data cache, failure behavior, and remaining production reliability trade-offs.
 
-## Current Cache Behavior
+## Current Architecture
 
-The dashboard backend currently stores fetched data in Node.js process memory using an in-memory cache.
+The backend uses a two-level cache:
 
-When running locally with:
-
-```bash
-npm run dev
+```text
+API request
+    ↓
+L1: Node.js process memory
+    ↓ cache miss or expired entry
+L2: Upstash Redis
+    ↓ cache miss or expired entry
+Yahoo VIX + CNN Fear & Greed providers
 ```
 
-the cached data lives in the memory of that local Node.js process on this computer. If the app is deployed to a hosting provider, the same cache would live in the memory of the server, container, or function instance running the app.
+- **L1 memory** provides the fastest reads within one backend process.
+- **L2 Upstash Redis** shares successful responses across processes and survives application restarts.
+- If Redis is disabled, not configured, or temporarily unavailable, the cache continues with process memory and logs the Redis failure once.
 
-The data volume is small. Each range contains only timestamped values for Fear & Greed and VIX, so caching all ranges usually takes only kilobytes to a few hundred kilobytes.
+The cached data volume is small. Each range contains timestamped Fear & Greed and VIX values, so all current keys normally require only kilobytes to a few hundred kilobytes.
 
-The main limitation is not memory size. The limitation is that process memory is temporary.
+## Cache Keys and Range Isolation
 
-## What “Service Restart Clears Cache” Means
+Each chart range has an independent history key:
 
-The service is the running Node.js backend process.
+```text
+market:1D
+market:5D
+market:1M
+market:6M
+market:YTD
+market:1Y
+market:5Y
+```
 
-If any of the following happen, the in-memory cache is cleared:
+The backend also stores a separate `market:latest` snapshot. This gives every historical range the same canonical latest VIX and Fear & Greed readings, even though their provider ranges and sampling intervals differ.
 
-- The terminal is closed
-- The computer or server restarts
-- The Node.js process crashes
-- The app is redeployed
-- A hosting provider restarts the container or serverless function
+For example, a request for `1Y` reads `market:1Y` for chart history and `market:latest` for the current gauge values. The service combines the two before returning the response.
 
-After restart, the cache starts empty and the app must fetch fresh data again.
+## Ten-Minute Freshness Window
 
-## What “Each Range Is Cached for 10 Minutes” Means
+Every cache entry contains:
 
-A range is one of the chart time windows:
+```json
+{
+  "time": 1784073600000,
+  "payload": {}
+}
+```
 
-- `1D`
-- `5D`
-- `1M`
-- `6M`
-- `YTD`
-- `1Y`
-- `5Y`
+An entry is fresh when its `time` is less than 10 minutes old. Fresh entries are returned without calling the external providers.
 
-Each range has its own cached response. For example, `1Y` data and `5Y` data are cached separately.
+The 10-minute window is application-level freshness, not currently a Redis expiration. Redis entries are written without `EX` or `PX`, so an expired entry can remain in Redis and be used as a stale fallback after a failed refresh.
 
-If a user requests `1Y`, the backend fetches CNN Fear & Greed and VIX data, combines them, and stores the result. If another `1Y` request arrives within 10 minutes, the backend returns the cached response instead of calling the external sources again.
+The read path is:
 
-## What `isStale` Means
+1. Return a fresh L1 memory entry when available.
+2. Otherwise, read L2 Redis.
+3. Copy a valid Redis entry into L1 memory.
+4. Return the entry if fresh; otherwise attempt a provider refresh while retaining it as a fallback.
 
-`isStale` tells the frontend whether the returned data is fresh or an older cached fallback.
+## Refresh Behavior
+
+When an entry needs refreshing, the market-data service fetches Yahoo VIX and CNN Fear & Greed concurrently with `Promise.all()`. It normalizes the two provider responses, aligns their time series, stores the successful payload in memory and Redis, and then returns it.
+
+The latest snapshot has an in-process single-flight guard. Concurrent requests that find `market:latest` expired share the same refresh promise instead of starting duplicate provider calls.
+
+Historical range refreshes do not currently have a per-key single-flight guard. Multiple concurrent cache misses for the same range can therefore trigger duplicate upstream requests.
+
+## What a Service Restart Changes
+
+A restart clears only the L1 process-memory cache. If Upstash Redis is enabled and reachable, the new process can restore entries from Redis and does not necessarily need to call the providers immediately.
+
+If Redis is disabled or unavailable, a restart clears all usable cache state. The next request must fetch fresh provider data before the API can return a market payload.
+
+## Stale-Data Fallback
+
+`isStale` tells the frontend whether the returned data came from a successful current refresh or an older cached fallback.
 
 Fresh response:
 
 ```json
 {
   "isStale": false,
-  "updatedAt": "2026-06-23T..."
+  "updatedAt": "2026-07-14T...",
+  "lastSuccessfulUpdate": "2026-07-14T..."
 }
 ```
 
@@ -66,119 +95,73 @@ Fallback response:
 ```json
 {
   "isStale": true,
-  "lastSuccessfulUpdate": "2026-06-23T...",
+  "lastSuccessfulUpdate": "2026-07-14T...",
   "staleReason": "provider_refresh_failed"
 }
 ```
 
-If live fetching fails but the backend still has a previous successful response, it can return stale data rather than making the whole dashboard fail. `staleReason` is a stable public code; raw provider errors remain server-side so credentials and internal endpoint details cannot leak into API responses.
+If a refresh fails and an older cache entry exists, the service returns the older payload with `isStale: true`. This keeps the dashboard useful during a provider outage while allowing the frontend to show the last successful update time.
 
-## Production Storage Options
+`staleReason` is a stable public code. Raw upstream errors remain server-side because they can contain credentials, internal URLs, or provider implementation details.
 
-### In-memory cache
+If no cached payload exists, the refresh error reaches the centralized Express error handler and the API returns a sanitized error response.
 
-Good for local development, demos, and small personal deployments.
+## Failure and Degradation Behavior
 
-Pros:
+### Redis failure
 
-- Simple
-- Fast
-- No database required
+Cache reads and writes fall back to the local memory Map. The application remains available, but cache state becomes process-local and is lost on restart.
 
-Cons:
+### One provider fails
 
-- Cleared on restart
-- Not shared across multiple servers
-- No durable history
+Yahoo and CNN are refreshed with `Promise.all()`, so either provider failing makes the combined refresh fail. The service then returns the previous combined payload when one exists. It does not currently mix one fresh series with one stale series.
 
-### File or JSON cache
+### Both providers fail
 
-Good for a small app that needs persistence without a database.
+The behavior is the same: return a stale combined payload if available; otherwise return an API error.
 
-Pros:
+### Multiple backend instances
 
-- Survives process restart
-- Still simple
+Redis shares cached responses across instances during normal operation. During a Redis outage, each instance uses its own memory cache, so instances can temporarily return entries with different ages.
 
-Cons:
+## Source Reliability Risks
 
-- Concurrency needs care
-- Not ideal for multi-instance deployments
+CNN Fear & Greed graph data and the Yahoo Finance VIX chart endpoint are outside this project's control.
 
-### Redis, Upstash, or KV
+Potential risks include:
 
-Good production default for cache-first dashboards.
+- Provider rate limits or `429`, `403`, and temporary `5xx` responses
+- Network timeouts
+- Response-schema changes
+- Delayed or revised market data
+- Provider access-policy or terms-of-service changes
 
-Pros:
+The providers use request timeouts, response validation, and normalization adapters, but caching cannot eliminate these upstream risks.
 
-- Fast
-- Shared across server instances
-- TTL support is built in
+## Current Limitations and Next Steps
 
-Cons:
+For larger public traffic, the next reliability improvements should be:
 
-- Requires an external service
+1. Fetch provider data on a schedule instead of refreshing it in a user request.
+2. Add a per-range distributed or in-process single-flight lock to prevent history cache stampedes.
+3. Add retry with exponential backoff and jitter for transient provider failures.
+4. Consider `Promise.allSettled()` and per-series freshness metadata if partial fresh responses are useful.
+5. Add Redis expiration or a maximum stale age so obsolete entries cannot remain available indefinitely.
+6. Store normalized snapshots in a durable database if the product needs owned historical data or analysis.
+7. Add provider latency, refresh-success, cache-hit, and stale-response metrics.
 
-### Database
-
-Good if the dashboard should keep long-term history or support analysis.
-
-Options include Postgres, Supabase, SQLite, or TimescaleDB.
-
-Pros:
-
-- Durable historical records
-- Easier trend analysis
-- Less dependent on external sources being available at request time
-
-Cons:
-
-- Requires schema design and migrations
-
-## Recommended Production Data Flow
-
-For production, the safer pattern is:
+The preferred higher-scale flow is:
 
 ```text
-Scheduled job fetches CNN + VIX every 10 minutes
+Scheduled worker fetches CNN + Yahoo every 10 minutes
         ↓
-Save result to Redis / KV / database
+Normalize, validate, and align both series
         ↓
-Users visit dashboard
+Save prepared snapshots to Redis and/or a durable database
         ↓
-API returns cached data from our own storage
+API servers read prepared data without calling providers
+        ↓
+Dashboard receives fresh data or an explicitly marked stale snapshot
 ```
 
-This avoids making every user request trigger external API calls.
-
-## Source Rate Limits and Access Risk
-
-CNN Fear & Greed graph data and Yahoo Finance VIX chart data are not fully controlled by this project.
-
-Potential risks:
-
-- The source may rate-limit requests
-- The source may return `429`, `403`, or temporary failures
-- The source may change its response shape
-- The source may be delayed or revised
-
-For personal use, the current 10-minute cache is usually enough. For public production traffic, the dashboard should avoid fetching external data per user request.
-
-Recommended safeguards:
-
-- Cache responses for at least 10 minutes
-- Use stale cache on failure
-- Add retry backoff
-- Use scheduled fetching
-- Consider official or paid market data sources for commercial use
-- Respect each provider's terms of service
-
-## Practical Recommendation for This Project
-
-For a simple production version:
-
-1. Keep in-memory cache as a first layer.
-2. Add Redis, KV, or a small database for persistence.
-3. Fetch data on a schedule rather than on every user request.
-4. Return stale data with `isStale: true` when live fetching fails.
-5. Show users the last successful update time.
+This removes external provider latency from the user request path and reduces the chance that a traffic spike becomes an upstream traffic spike.
