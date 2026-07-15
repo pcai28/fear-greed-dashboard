@@ -8,7 +8,7 @@ Users can view the latest Fear & Greed and VIX readings, compare historical tren
 
 ## 2. Why I built it
 
-First, I wanted to learn how to use Codex to assist real software development: planning features, refactoring code, debugging, improving frontend UX, writing tests.
+First, I wanted to learn how to use Codex to assist software development: planning features, refactoring code, debugging, improving frontend UX, writing tests.
 
 Second, I wanted to create a tool that I personally want to check every day. I follow market sentiment regularly, but I wanted a simple dashboard that brings the key signals together without needing to open multiple financial websites.
 
