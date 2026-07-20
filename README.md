@@ -8,7 +8,7 @@ Users can view the latest Fear & Greed and VIX readings, compare historical tren
 
 ## 2. Why I built it
 
-First, I wanted to learn how to use Codex to assist software development: planning features, refactoring code, debugging, improving frontend UX, writing tests.
+First, I wanted to learn how to use Codex to assist software development: planning features, security check, debugging, improving frontend UX using skills.
 
 Second, I wanted to create a tool that I personally want to check every day. I follow market sentiment regularly, but I wanted a simple dashboard that brings the key signals together without needing to open multiple financial websites.
 
@@ -21,7 +21,7 @@ Second, I wanted to create a tool that I personally want to check every day. I f
 - External data providers: Yahoo Finance chart API for VIX and CNN Fear & Greed graph data
 - Security: Helmet security headers, API rate limiting, Cloudflare Turnstile for waitlist protection
 - Testing: Vitest, Supertest
-- Deployment: Railway-ready configuration
+- Deployment: Railway
 
 ## 4. Features
 
@@ -34,7 +34,6 @@ Second, I wanted to create a tool that I personally want to check every day. I f
 - Share/export PNG snapshots for gauges and charts
 - Accessible chart keyboard navigation
 - Waitlist signup for future SMS alerts
-- Privacy and terms pages
 
 ## 5. Learning
 
